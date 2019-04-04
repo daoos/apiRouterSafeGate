@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.WfmActivityStepMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.WfmActivityStep" id="wfmActivityStepMap">
+        <result property="sId" column="s_id"/>
+        <result property="aId" column="a_id"/>
+        <result property="stepName" column="step_name"/>
+        <result property="stepStatus" column="step_status"/>
+        <result property="note" column="note"/>
+        <result property="leaderCorp" column="leader_corp"/>
+        <result property="leaderName" column="leader_name"/>
+        <result property="leaderTel" column="leader_tel"/>
+    </resultMap>
+
+</mapper>

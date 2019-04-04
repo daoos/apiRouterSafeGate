@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.ApiQueryInfoMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.ApiQueryInfo" id="apiQueryInfoMap">
+        <result property="queryId" column="query_id"/>
+        <result property="apiId" column="api_id"/>
+        <result property="queryName" column="query_name"/>
+        <result property="validateReg" column="validate_reg"/>
+        <result property="regUserDefined" column="reg_user_defined"/>
+        <result property="queryNote" column="query_note"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="updTime" column="upd_time"/>
+    </resultMap>
+
+</mapper>

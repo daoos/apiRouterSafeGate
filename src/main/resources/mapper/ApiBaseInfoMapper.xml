@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.ApiBaseInfoMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.ApiBaseInfo" id="apiBaseInfoMap">
+        <result property="apiId" column="api_id"/>
+        <result property="apiPubkey" column="api_pubkey"/>
+        <result property="apiName" column="api_name"/>
+        <result property="baseUrl" column="base_url"/>
+        <result property="path" column="path"/>
+        <result property="method" column="method"/>
+        <result property="enabledStatus" column="enabled_status"/>
+        <result property="apiOwnerId" column="api_owner_id"/>
+        <result property="apiOwnerName" column="api_owner_name"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="updTime" column="upd_time"/>
+        <collection property="apiHeaderInfoList" ofType="com.ztgeo.entity.ApiHeaderInfo">
+            <result property="headerId" column="header_id"/>
+            <result property="headerName" column="header_name"/>
+            <result property="headerName" column="header_name"/>
+            <result property="headerValue" column="header_value"/>
+            <result property="headerNote" column="header_note"/>
+        </collection>
+        <collection property="apiQueryInfoList" ofType="com.ztgeo.entity.ApiQueryInfo">
+            <result property="queryId" column="query_id"/>
+            <result property="queryName" column="query_name"/>
+            <result property="validateReg" column="validate_reg1"/>
+            <result property="regUserDefined" column="reg_user_defined1"/>
+            <result property="queryNote" column="query_note"/>
+        </collection>
+        <collection property="apiBodyInfoList" ofType="com.ztgeo.entity.ApiBodyInfo">
+            <result property="bodyId" column="body_id"/>
+            <result property="paramName" column="param_name"/>
+            <result property="validateReg" column="validate_reg2"/>
+            <result property="regUserDefined" column="reg_user_defined2"/>
+            <result property="paramNote" column="param_note"/>
+        </collection>
+    </resultMap>
+
+    <!-- 根据apiId获取一个API的所有信息（header，querystring,body部分） -->
+    <select id="getOneApiBaseInfo" resultMap="apiBaseInfoMap">
+        select abi.*,aqi.query_name query_name,ahi.*,aqi.query_id query_id,aqi.validate_reg validate_reg1,aqi.reg_user_defined reg_user_defined1,aqi.query_note query_note,abii.body_id body_id,abii.param_name param_name,abii.validate_reg validate_reg2,abii.reg_user_defined reg_user_defined2,abii.param_note param_note
+        from api_base_info abi
+        left join api_header_info ahi
+        on abi.api_id = ahi.api_id
+        left join api_query_info aqi
+        on abi.api_id = aqi.api_id
+        left join api_body_info abii
+        on abi.api_id = abii.api_id
+        where abi.api_id = #{apiId}
+    </select>
+
+    <!-- 根据apipubkey获取一个API的所有信息（header，querystring,body部分） -->
+    <select id="selectByApiPubkey" resultMap="apiBaseInfoMap">
+        select abi.*,aqi.query_name query_name,ahi.*,aqi.query_id query_id,aqi.validate_reg validate_reg1,aqi.reg_user_defined reg_user_defined1,aqi.query_note query_note,abii.body_id body_id,abii.param_name param_name,abii.validate_reg validate_reg2,abii.reg_user_defined reg_user_defined2,abii.param_note param_note
+        from api_base_info abi
+        left join api_header_info ahi
+        on abi.api_id = ahi.api_id
+        left join api_query_info aqi
+        on abi.api_id = aqi.api_id
+        left join api_body_info abii
+        on abi.api_id = abii.api_id
+        where abi.api_pubkey = #{apipubkey}
+    </select>
+
+</mapper>

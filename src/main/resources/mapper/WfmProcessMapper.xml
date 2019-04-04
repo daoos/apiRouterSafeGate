@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.WfmProcessMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.WfmProcess" id="wfmProcessMap">
+        <result property="pId" column="p_id"/>
+        <result property="procName" column="proc_name"/>
+        <result property="totalLimit" column="total_limit"/>
+        <result property="status" column="status"/>
+        <result property="note" column="note"/>
+        <result property="imageJson" column="image_json"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="updTime" column="upd_time"/>
+        <result property="updUserId" column="upd_user_id"/>
+    </resultMap>
+
+    <resultMap type="com.ztgeo.entity.WfmProcess" id="wfmProcessNoTimeMap">
+        <result property="pId" column="p_id"/>
+        <result property="procName" column="proc_name"/>
+        <result property="totalLimit" column="total_limit"/>
+        <result property="status" column="status"/>
+        <result property="note" column="note"/>
+        <result property="imageJson" column="image_json"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="updUserId" column="upd_user_id"/>
+    </resultMap>
+
+    <!-- 根据业务类型查询模板表 -->
+    <select id="selectAllProcessByName" resultMap="wfmProcessNoTimeMap">
+        select *
+        from wfm_process wp
+        where wp.proc_name = #{businessTypeName} and wp.is_deleted = 0
+    </select>
+
+</mapper>

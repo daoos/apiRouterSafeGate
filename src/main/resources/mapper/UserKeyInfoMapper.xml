@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.UserKeyInfoMapper">
+
+    <resultMap type="com.ztgeo.entity.UserKeyInfo" id="userKeyInfoMap">
+        <result property="keyId" column="key_id"/>
+        <result property="userRealId" column="user_real_id"/>
+        <result property="username" column="username"/>
+        <result property="name" column="name"/>
+        <result property="userIdentityId" column="user_identity_id"/>
+        <result property="symmetricPubkey" column="symmetric_pubkey"/>
+        <result property="signSecretKey" column="sign_secret_key"/>
+        <result property="signPubKey" column="sign_pub_key"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="updTime" column="upd_time"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="apiName" column="api_name"/>
+        <result property="baseUrl" column="base_url"/>
+        <result property="path" column="path"/>
+    </resultMap>
+
+    <!-- 通过用户身份标识查询密钥信息 -->
+    <select id="selectSymmetricPubkeyByUserIdentityId" parameterType="String" resultMap="userKeyInfoMap">
+        select symmetric_pubkey,sign_pub_key,user_real_id from user_key_info where user_identity_id = #{userIdentityId}
+    </select>
+
+    <!-- 根据API公开ID查询该API对应的机构的密钥信息 -->
+    <select id="selectKeyInfoByApiId" parameterType="String" resultMap="userKeyInfoMap">
+        select symmetric_pubkey,sign_secret_key,sign_pub_key,user_real_id,uki.name,abi.api_name,abi.base_url,abi.path
+        from api_base_info abi
+        inner join user_key_info uki
+        on abi.api_owner_id = uki.user_real_id
+        where abi.api_pubkey = #{apiID}
+    </select>
+
+
+</mapper>

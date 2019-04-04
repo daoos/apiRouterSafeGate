@@ -1,0 +1,58 @@
+logging:
+    level:
+#        tk.mybatis: DEBUG
+        com.ztgeo: DEBUG
+spring:
+  application:
+    name: apiRouter
+  datasource:
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://172.22.148.129:3306/ag_router?useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: ztgeo123
+      # 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      druid:
+          filters: stat
+          maxActive: 20
+          initialSize: 1
+          maxWait: 60000
+          minIdle: 1
+          timeBetweenEvictionRunsMillis: 60000
+          minEvictableIdleTimeMillis: 300000
+          validationQuery: select 'x'
+          testWhileIdle: true
+          testOnBorrow: false
+          testOnReturn: false
+          poolPreparedStatements: true
+          maxOpenPreparedStatements: 20
+  redis:
+      host: localhost
+      port: 6379
+      timeout: 1000
+  data:
+    mongodb:
+      uri: mongodb://ztgeo:123456@localhost:27017/http_db
+server:
+  port: 8000
+mybatis:
+  mapper-locations: "classpath*:mapper/*.xml"
+mapper:
+  mappers: com.github.wxiaoqi.security.common.mapper.CommonMapper
+# 自定义属性值
+customAttributes:
+  ftpIp: 192.168.1.120 # ftp Ip
+  ftpPort: 21 # ftp端口号
+  ftpUsername: admin # FTP登录账号
+  ftpPassword: bian1991 # FTP登录密码
+  ##ftpbasePath: E:\File\123 #FTP根目录
+  # redis 黑名单key
+  black-ip-list-key: "ip-black-list"
+  # 存储用户发送数据的数据库名
+  dbName: "http_db"
+  dbnoticeName: "httpNotice_db"
+# 平台公钥/私钥
+secret:
+  WFpriKey: MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAJhVnjMkUZlhTBGv8hPLe1RwC1d4OJCJxsTife8SRqAwa/6EUxh+2iJtqFkffNSedYi1/K7F9S5b9jQnEW8mp+k+cF0RuHoz2M5am1d3fCp+2TrzixZlIhV0iwhXatiMnPEwccI1bCeLabn5rD3JVk/8YAKtDhe5TIswLGB8vCpjAgMBAAECgYBTytyfQv4DgWqHXCGrU8U+F/eVIJL0pmSIjhE5fPMOUDRHJuBSXAx+3ZS5mUFf7t212mzocglAe+M8orTLUBcRrkRdpjb5X2ZwXD91ZrK3fD54hWFDy43mBOZ6FrFb3j0Ub5GzSDMqow3okBjVOGvuBnHmFuE69inYIGwd9He4wQJBAPSIf8mrpJYbsSb7eHeeVKBPgWfLXyrHMbtzquLwCA3s41VtM+TJvEAIdgB6hUeUgAu+KqjOV0Y4h6qJ3mvt0mECQQCfelFttjbEtKhvUDzsDXwdSWMqO73BZfa2tXF8qh7KieLb2QLLKNuUuESenpyufO6jCQYmLz/GkGwCwrI82ftDAkEAryxpfqr7CJ1l1qsmrWo67WyHIzfJQPfZZJODw3Z4DqG4aSYFmsv5k1V8UvNyLsjuwXrFTJAkbSVp6n1BXMfNgQJBAJ4pTUClicOj97gNt53T8deJxNNJ1HNNkFS7tgWRImB0R40Jt/+MUdk4trUpUPKr7G+8r2CHU5S1/qjuNp6rAMkCQCstJIJRALe8M/M9gQw3DFo/PlKChzRbVTKBBWishXRs5e3csT0YOkUauQsJ9dlHmwBG2rzld9SlEc9QoXdknvs=
+  WFpubKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYVZ4zJFGZYUwRr/ITy3tUcAtXeDiQicbE4n3vEkagMGv+hFMYftoibahZH3zUnnWItfyuxfUuW/Y0JxFvJqfpPnBdEbh6M9jOWptXd3wqftk684sWZSIVdIsIV2rYjJzxMHHCNWwni2m5+aw9yVZP/GACrQ4XuUyLMCxgfLwqYwIDAQAB

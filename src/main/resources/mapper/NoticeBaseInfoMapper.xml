@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.NoticeBaseInfoMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.NoticeBaseInfo" id="noticeBaseInfoMap">
+        <result property="noticeId" column="notice_id"/>
+        <result property="userRealId" column="user_real_id"/>
+        <result property="username" column="username"/>
+        <result property="noticePath" column="notice_path"/>
+        <result property="method" column="method"/>
+        <result property="noticeNote" column="notice_note"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="updTime" column="upd_time"/>
+        <result property="updUserId" column="upd_user_id"/>
+    </resultMap>
+
+</mapper>

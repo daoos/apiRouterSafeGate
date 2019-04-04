@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.WfmProcessStepMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.WfmProcessStep" id="wfmProcessStepMap">
+        <result property="sId" column="s_id"/>
+        <result property="pId" column="p_id"/>
+        <result property="stepName" column="step_name"/>
+        <result property="stepStatus" column="step_status"/>
+        <result property="note" column="note"/>
+        <result property="leaderCorp" column="leader_corp"/>
+        <result property="leaderName" column="leader_name"/>
+        <result property="leaderTel" column="leader_tel"/>
+    </resultMap>
+
+    <select id="selectAllStepInfoByPId" resultMap="wfmProcessStepMap">
+        select * from wfm_process_step wps
+        where wps.p_id = #{pId}
+    </select>
+    
+</mapper>

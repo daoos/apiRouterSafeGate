@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.ApiAccessRecordMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.ApiAccessRecord" id="apiAccessRecordMap">
+        <result property="id" column="id"/>
+        <result property="apiId" column="api_id"/>
+        <result property="apiName" column="api_name"/>
+        <result property="apiUrl" column="api_url"/>
+        <result property="apiType" column="api_type"/>
+        <result property="accessClientIp" column="access_client_ip"/>
+        <result property="accessYear" column="access_year"/>
+        <result property="accessMonth" column="access_month"/>
+        <result property="accessDay" column="access_day"/>
+        <result property="accessTime" column="access_time"/>
+        <result property="requestData" column="request_data"/>
+        <result property="responseData" column="response_data"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ztgeo.mapper.ApiHeaderInfoMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ztgeo.entity.ApiHeaderInfo" id="apiHeaderInfoMap">
+        <result property="headerId" column="header_id"/>
+        <result property="apiId" column="api_id"/>
+        <result property="headerName" column="header_name"/>
+        <result property="headerValue" column="header_value"/>
+        <result property="headerNote" column="header_note"/>
+        <result property="crtUserId" column="crt_user_id"/>
+        <result property="crtTime" column="crt_time"/>
+        <result property="updUserId" column="upd_user_id"/>
+        <result property="updTime" column="upd_time"/>
+        <association property="apiBaseInfo" javaType="com.ztgeo.entity.ApiBaseInfo">
+            <id property="apiId" column="api_id"/>
+            <result property="apiPubkey" column="api_pubkey"/>
+            <result property="apiName" column="api_name"/>
+            <result property="baseUrl" column="base_url"/>
+        </association>
+    </resultMap>
+
+</mapper>
