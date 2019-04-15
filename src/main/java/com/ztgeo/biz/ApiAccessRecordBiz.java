@@ -4,6 +4,7 @@ import com.github.wxiaoqi.security.common.biz.BusinessBiz;
 import com.github.wxiaoqi.security.common.util.UUIDUtils;
 import com.ztgeo.entity.ApiAccessRecord;
 import com.ztgeo.entity.ApiBaseInfo;
+import com.ztgeo.entity.NoticeRecord;
 import com.ztgeo.mapper.ApiAccessRecordMapper;
 import com.ztgeo.utils.HttpUtils;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 
 /**
  * API访问记录表
@@ -50,6 +52,8 @@ public class ApiAccessRecordBiz extends BusinessBiz<ApiAccessRecordMapper, ApiAc
         apiAccessRecord.setAccessMonth(String.valueOf(localDateTime.getMonth().getValue()));
         apiAccessRecord.setAccessDay(String.valueOf(localDateTime.getDayOfMonth()));
         apiAccessRecord.setRequestData(encryptData);
+        apiAccessRecord.setApiType(apiBaseInfo.getApiType());
+        apiAccessRecord.setUserRealID(apiBaseInfo.getApiOwnerId());
         mapper.insertSelective(apiAccessRecord);
         return id;
     }
@@ -66,4 +70,17 @@ public class ApiAccessRecordBiz extends BusinessBiz<ApiAccessRecordMapper, ApiAc
         apiAccessRecord.setResponseData(rspData);
         mapper.updateByPrimaryKeySelective(apiAccessRecord);
     }
+    public void updateApiRecordStatus(String id) {
+        mapper.updateApiRecordStatus(id);
+    }
+    public void updateApiRecordStatusSuccess(String id) {
+        mapper.updateApiRecordStatusSuccess(id);
+    }
+    public void updateApiRecordCount(int count,String id) {
+        mapper.updateApiRecordCount(count,id);
+    }
+    public List<ApiAccessRecord> selectAllLogs() {
+        return mapper.selectAllLogs();
+    }
+
 }

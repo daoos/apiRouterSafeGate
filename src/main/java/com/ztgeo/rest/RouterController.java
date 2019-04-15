@@ -112,6 +112,8 @@ public class RouterController {
         String messageTo = clientRequestPostEntity.getMessageTo();
         if (Objects.equals(messageTo, CryptographyConstants.MESSAGE_TO_CORP)){ // 机构发送给机构
             return requestJsonProcessBiz.processPostData(clientRequestPostEntity,request);
+        } else if(Objects.equals(messageTo, CryptographyConstants.MESSAGE_TO_NoticeCORP)){
+            return requestJsonProcessBiz.processNoticePostData(clientRequestPostEntity,request);
         } else if (Objects.equals(messageTo, CryptographyConstants.MESSAGE_TO_PLATFORM)){ // 机构发送给平台(通知)
             wfmActivityBiz.updateActivityStepStatus(clientRequestPostEntity);
             return CodeMsg.PROCESS_SUCCESS.toString();

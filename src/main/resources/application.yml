@@ -7,9 +7,9 @@ spring:
     name: apiRouter
   datasource:
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://172.22.148.129:3306/ag_router?useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://172.18.0.147:3306/ag_router?useUnicode=true&characterEncoding=UTF-8
       username: root
-      password: ztgeo123
+      password: 123456
       # 使用druid数据源
       type: com.alibaba.druid.pool.DruidDataSource
       driver-class-name: com.mysql.jdbc.Driver
@@ -28,7 +28,7 @@ spring:
           poolPreparedStatements: true
           maxOpenPreparedStatements: 20
   redis:
-      host: localhost
+      host: 172.18.0.147
       port: 6379
       timeout: 1000
   data:

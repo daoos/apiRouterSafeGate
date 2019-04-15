@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+
 
 
 /**
@@ -18,7 +18,7 @@ import java.util.Date;
 public class ApiAccessRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	    //
+	    //主键ID
     @Id
     private String id;
 	
@@ -26,11 +26,11 @@ public class ApiAccessRecord implements Serializable {
     @Column(name = "api_id")
     private String apiId;
 	
-	    //
+	    //api名称
     @Column(name = "api_name")
     private String apiName;
 	
-	    //
+	    //api地址
     @Column(name = "api_url")
     private String apiUrl;
 
@@ -65,7 +65,19 @@ public class ApiAccessRecord implements Serializable {
 	// 响应数据
 	@Column(name = "response_data")
 	private String responseData;
+	//返回类型
+	@Column(name = "response_type")
+	private int responseType;
 
+	//请求用户的真实id 既登录用户的id
+	@Column(name = "user_real_id")
+	private String userRealID;
+	//是否成功
+	@Column(name = "status")
+	private int status;
+	//重发次数
+	@Column(name = "count")
+	private int count;
 	/**
 	 * 设置：
 	 */
@@ -190,4 +202,38 @@ public class ApiAccessRecord implements Serializable {
 	public void setApiType(int apiType) {
 		this.apiType = apiType;
 	}
+
+	public int getResponseType() {
+		return responseType;
+	}
+
+	public void setResponseType(int responseType) {
+		this.responseType = responseType;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void setCount(int count) {
+		this.count = count;
+	}
+
+	public String getUserRealID() {
+		return userRealID;
+	}
+
+	public void setUserRealID(String userRealID) {
+		this.userRealID = userRealID;
+	}
+
+
 }

@@ -6,6 +6,8 @@ import com.ztgeo.entity.NoticeRecord;
 import com.ztgeo.mapper.NoticeRecordMapper;
 import com.github.wxiaoqi.security.common.biz.BusinessBiz;
 
+import java.util.List;
+
 /**
  * 通知记录
  *
@@ -15,4 +17,13 @@ import com.github.wxiaoqi.security.common.biz.BusinessBiz;
  */
 @Service
 public class NoticeRecordBiz extends BusinessBiz<NoticeRecordMapper,NoticeRecord> {
+    public void updateNoticeRecordStatusSuccess(String id) {
+        mapper.updateNoticeRecordStatusSuccess(id);
+    }
+    public void updateNoticeRecordCount(int count,String id) {
+        mapper.updateNoticeRecordCount(count,id);
+    }
+    public List<NoticeRecord> selectNoticeAllLogs() {
+        return mapper.selectNoticeAllLogs();
+    }
 }

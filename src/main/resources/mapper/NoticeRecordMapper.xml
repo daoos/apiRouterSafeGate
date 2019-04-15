@@ -11,6 +11,13 @@
         <result property="receiverUrl" column="receiver_url"/>
         <result property="status" column="status"/>
         <result property="sendTime" column="send_time"/>
+        <result property="receiverUseName" column="receiver_usename"/>
+        <result property="receiverName" column="receiver_name"/>
+        <result property="typedesc" column="typedesc"/>
+        <result property="count" column="count"/>
+        <result property="requestData" column="request_data"/>
     </resultMap>
-
+    <select id="selectNoticeAllLogs" resultMap="noticeRecordMap">
+        SELECT record_id,receiver_url,request_data,count  from notice_record t where `status`=1 and count &lt; 3
+    </select>
 </mapper>

@@ -62,6 +62,16 @@ public class NoticeBaseInfo implements Serializable {
 
     @Transient
     private  String name;
+	@Transient
+	private  String userId;
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	public String getName() {
 		return name;

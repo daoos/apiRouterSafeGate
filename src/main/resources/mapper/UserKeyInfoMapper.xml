@@ -25,7 +25,6 @@
     <select id="selectSymmetricPubkeyByUserIdentityId" parameterType="String" resultMap="userKeyInfoMap">
         select symmetric_pubkey,sign_pub_key,user_real_id from user_key_info where user_identity_id = #{userIdentityId}
     </select>
-
     <!-- 根据API公开ID查询该API对应的机构的密钥信息 -->
     <select id="selectKeyInfoByApiId" parameterType="String" resultMap="userKeyInfoMap">
         select symmetric_pubkey,sign_secret_key,sign_pub_key,user_real_id,uki.name,abi.api_name,abi.base_url,abi.path
@@ -34,6 +33,4 @@
         on abi.api_owner_id = uki.user_real_id
         where abi.api_pubkey = #{apiID}
     </select>
-
-
 </mapper>

@@ -69,6 +69,9 @@ public class ApiBaseInfo implements Serializable {
     @Column(name = "upd_time")
     private Date updTime;
 
+	//接口类型
+	@Column(name = "api_type")
+	private int apiType;
     // header列表
 	@Transient
 	private List<ApiHeaderInfo> apiHeaderInfoList;
@@ -216,6 +219,14 @@ public class ApiBaseInfo implements Serializable {
 		this.updTime = updTime;
 	}
 
+	public int getApiType() {
+		return apiType;
+	}
+
+	public void setApiType(int apiType) {
+		this.apiType = apiType;
+	}
+
 	/**
 	 * 设置：修改者ID
 	 */
@@ -269,6 +280,7 @@ public class ApiBaseInfo implements Serializable {
 				", crtTime=" + crtTime +
 				", updUserId='" + updUserId + '\'' +
 				", updTime=" + updTime +
+				", apiType='" + apiType + '\'' +
 				", apiHeaderInfoList=" + apiHeaderInfoList +
 				", apiQueryInfoList=" + apiQueryInfoList +
 				", apiBodyInfoList=" + apiBodyInfoList +

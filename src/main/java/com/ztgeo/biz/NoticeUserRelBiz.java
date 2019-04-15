@@ -3,17 +3,13 @@ package com.ztgeo.biz;
 import com.alibaba.fastjson.JSONObject;
 import com.github.wxiaoqi.security.common.biz.BusinessBiz;
 import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+
 import com.ztgeo.common.ZtgeoBizRuntimeException;
 import com.ztgeo.entity.*;
 import com.ztgeo.mapper.NoticeUserRelMapper;
 import com.ztgeo.msg.CodeMsg;
 import com.ztgeo.msg.ResultMap;
 import okhttp3.*;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import com.github.wxiaoqi.security.common.util.UUIDUtils;
 import java.util.Date;
@@ -50,18 +47,12 @@ public class NoticeUserRelBiz extends BusinessBiz<NoticeUserRelMapper, NoticeUse
     public String sendNotice(JSONObject jsonObject, HttpServletRequest requestReceive) {
         // 查询发送者ID和待发送的通知类型
         JSONObject tokenEntityJson = jsonObject.getJSONObject("token");
-        String userID = tokenEntityJson.getString("userID");
+        //String userID = tokenEntityJson.getString("userID");
+        String userID = "35c0854f7a74d150b832075b49ab13a03c721b85";
         String noticeCode = jsonObject.getString("noticeCode");
         String sendStr = jsonObject.getString("data");
-        // 保存发送的通知数据sendStr至MongoDb
-        String userLoginName = userKeyInfoBiz.selectUsernameByUserPubKey(userID);// 查询用户的登录名
-        CodecRegistry pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClient.getDefaultCodecRegistry(),
-                CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        MongoDatabase mongoDB = mongoClient.getDatabase(dbnoticeName).withCodecRegistry(pojoCodecRegistry);
-        MongoCollection<NoticeEntity> sendCollection = mongoDB.getCollection(userLoginName + "_noticesend", NoticeEntity.class);
         // 查询待发送的http列表
         List<NoticeBaseInfo> urlList = mapper.getNoticeURLList(userID, noticeCode);
-        System.out.println(urlList);
         // 异步发送http请求
         for (int i = 0; i < urlList.size(); i++) {
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -71,54 +62,43 @@ public class NoticeUserRelBiz extends BusinessBiz<NoticeUserRelMapper, NoticeUse
                     .build();
             RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8")
                     , sendStr);
-            NoticeEntity noticeEntity = new NoticeEntity();
-            noticeEntity.setMethod(requestReceive.getMethod());
-            noticeEntity.setContentType(requestReceive.getContentType());
-            LocalDateTime localTime = LocalDateTime.now();
-            noticeEntity.setYear(localTime.getYear());
-            noticeEntity.setMonth(localTime.getMonthValue());
-            noticeEntity.setDay(localTime.getDayOfMonth());
-            noticeEntity.setHour(localTime.getHour());
-            noticeEntity.setMinute(localTime.getMinute());
-            noticeEntity.setSecond(localTime.getSecond());
-            noticeEntity.setCurrentTime(Instant.now().getEpochSecond());
-            noticeEntity.setNoticeCode(noticeCode);
-            noticeEntity.setUerId(userID);
-            noticeEntity.setBody(sendStr);
+            //接收方真实ID
+            String receiverId=urlList.get(i).getUserRealId();
+            //发送地址
             String url = urlList.get(i).getNoticePath();
-            String username = urlList.get(i).getUsername();
+            //接收方用户名（例如bdc_dj）
+            String receiverName = urlList.get(i).getUsername();
+            //接收方机构名
+            String name = urlList.get(i).getName();
+            //String typedesc = mapper.getNoticetype(noticeCode,urlList.get(i).getUserId());
+            LocalDateTime localDateTime = LocalDateTime.now();
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String currentTime = dateTimeFormatter.format(localDateTime);
             Request request = new Request.Builder()
                     .url(url)//请求的url
                     .post(requestBody)
                     .build();
             Call call = okHttpClient.newCall(request);
-            String name = urlList.get(i).getName();
-            String receiverId = urlList.get(i).getUserRealId(); // 接收者ID
-            String typedesc = mapper.getNoticetype(noticeCode);
-            noticeEntity.setUrl(url);
-            noticeEntity.setReceiveId(receiverId);
-            noticeEntity.setUsername(username);
-            noticeEntity.setTypedesc(typedesc);
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
-                    noticeEntity.setName(name);
-                    noticeEntity.setStatus(1);
-                    sendCollection.insertOne(noticeEntity);
+                    System.out.println("11");
+                    mapper.InsertNoticeRecord(UUIDUtils.generateShortUuid(),userID,receiverId,url,receiverName,name,noticeCode,
+                            1,currentTime,0,sendStr);
                 }
-
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     response.body().string();//
-                    System.out.println(noticeEntity);
-                    noticeEntity.setName(name);
+                    System.out.println("22");
                     if (response.isSuccessful()) { // 成功响应
-                        noticeEntity.setStatus(0);
-                        sendCollection.insertOne(noticeEntity);
+
+                        mapper.InsertNoticeRecord(UUIDUtils.generateShortUuid(),userID,receiverId,url,receiverName,name,noticeCode,
+                                0,currentTime,0,sendStr);
                     } else { // 失败
-                        noticeEntity.setStatus(1);
-                        sendCollection.insertOne(noticeEntity);
+                        System.out.println("33");
+                        mapper.InsertNoticeRecord(UUIDUtils.generateShortUuid(),userID,receiverId,url,receiverName,name,noticeCode,
+                                1,currentTime,0,sendStr);
                         throw new ZtgeoBizRuntimeException(CodeMsg.RECEIVE_EXCEPTION, "请联系相关人员");
                     }
 
@@ -127,4 +107,5 @@ public class NoticeUserRelBiz extends BusinessBiz<NoticeUserRelMapper, NoticeUse
         }
         return ResultMap.ok(CodeMsg.PROCESS_SUCCESS).toString();
     }
+
 }

@@ -17,6 +17,14 @@
         <result property="accessTime" column="access_time"/>
         <result property="requestData" column="request_data"/>
         <result property="responseData" column="response_data"/>
+        <result property="responseType" column="response_type"/>
+        <result property="userRealID" column="user_real_id"/>
+        <result property="status" column="status"/>
+        <result property="count" column="count"/>
     </resultMap>
+    <select id="selectAllLogs" resultMap="apiAccessRecordMap">
+        select id ,t.api_url,t.request_data,t.count  from api_access_record t where t.`status`=1 and count &lt;3
+    </select>
+
 
 </mapper>

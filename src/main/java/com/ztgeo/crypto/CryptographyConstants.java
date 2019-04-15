@@ -20,6 +20,7 @@ public class CryptographyConstants {
     /*****************消息发送对象messageTo相关***************/
     public static final String MESSAGE_TO_CORP = "corp";
     public static final String MESSAGE_TO_PLATFORM = "platform";
+    public static final String MESSAGE_TO_NoticeCORP = "noticecorp";
 
     /*******************数据类型dataType相关******************/
     public static final String DATA_TYPE_JSON = "json";

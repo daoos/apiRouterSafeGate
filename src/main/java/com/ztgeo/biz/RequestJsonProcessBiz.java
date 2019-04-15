@@ -9,7 +9,6 @@ import com.ztgeo.config.SecretConfig;
 import com.ztgeo.crypto.*;
 import com.ztgeo.entity.*;
 import com.ztgeo.msg.CodeMsg;
-import com.ztgeo.msg.ResultMap;
 import com.ztgeo.utils.HttpUtils;
 import com.ztgeo.utils.UserKeyUtils;
 import okhttp3.*;
@@ -61,13 +60,16 @@ public class RequestJsonProcessBiz {
         String sign = clientRequestPostEntity.getSign();
         if (StringUtils.isBlank(data) || StringUtils.isBlank(sign))
             throw new ZtgeoBizRuntimeException(CodeMsg.PARAMS_ERROR, "未获取到数据或签名");
+
         // 获取密钥信息
         UserKeyInfo userKeyInfo = userKeyInfoBiz.selectSymmetricPubkeyByUserIdentityId(userID); // 获取密钥信息
+        //获取签名公钥
         String signPubKey = userKeyInfo.getSignPubKey();
-        // 解密数据
+        //获取加密密钥
         String aesKey = userKeyInfo.getSymmetricPubkey();
-        // 验证签名
+        // 解密数据
         String reqDecryptData = CryptographyOperation.aesDecrypt(aesKey, data);
+        // 验证签名
         boolean verifyResult = CryptographyOperation.signatureVerify(signPubKey, reqDecryptData, sign);
         if (Objects.equals(verifyResult, false))
             throw new ZtgeoBizRuntimeException(CodeMsg.SIGN_ERROR);
@@ -112,8 +114,81 @@ public class RequestJsonProcessBiz {
         // 重新加密加签
         rspEncryptData = CryptographyOperation.aesEncrypt(aesKey, rspDecryptData);
         rspSignData = CryptographyOperation.generateSign(secretConfig.getWFpriKey(), rspEncryptData);
+
         commonResponseEntity.setData(rspEncryptData);
         commonResponseEntity.setSign(rspSignData);
+        return JSONObject.toJSONString(commonResponseEntity);
+    }
+    /**
+     * 处理接口通知post数据
+     * content-type:application/json
+     * 收到数据返回数据成功，转发失败存储数据到数据库并重发
+     */
+    public String processNoticePostData(ClientRequestPostEntity clientRequestPostEntity, HttpServletRequest request) {
+        // 获取token数据
+        TokenEntity tokenEntity = clientRequestPostEntity.getToken();
+        String apiID = tokenEntity.getApiID();
+        String userID = tokenEntity.getUserID();
+        // 获取数据和签名
+        String data = clientRequestPostEntity.getData();
+        String sign = clientRequestPostEntity.getSign();
+        if (StringUtils.isBlank(data) || StringUtils.isBlank(sign))
+            throw new ZtgeoBizRuntimeException(CodeMsg.PARAMS_ERROR, "未获取到数据或签名");
+
+        // 获取密钥信息
+        UserKeyInfo userKeyInfo = userKeyInfoBiz.selectSymmetricPubkeyByUserIdentityId(userID); // 获取密钥信息
+        //获取签名公钥
+        String signPubKey = userKeyInfo.getSignPubKey();
+        //获取加密密钥
+        String aesKey = userKeyInfo.getSymmetricPubkey();
+        // 解密数据
+        String reqDecryptData = CryptographyOperation.aesDecrypt(aesKey, data);
+        // 验证签名
+        boolean verifyResult = CryptographyOperation.signatureVerify(signPubKey, reqDecryptData, sign);
+        if (Objects.equals(verifyResult, false))
+            throw new ZtgeoBizRuntimeException(CodeMsg.SIGN_ERROR);
+
+        // 获取接收方机构的密钥
+        UserKeyInfo userKeyInfoReceive = userKeyInfoBiz.selectKeyInfoByApiId(apiID);
+        String receiveSignPubKey = userKeyInfoReceive.getSignPubKey();
+        String receiveAesKey = userKeyInfoReceive.getSymmetricPubkey();
+        if (StringUtils.isBlank(receiveSignPubKey) || StringUtils.isBlank(receiveAesKey))
+            throw new ZtgeoBizRuntimeException(CodeMsg.FAIL, "未查询到接收方密钥信息");
+        // 重新加密加签
+        String receiveEncryptData = CryptographyOperation.aesEncrypt(receiveAesKey, reqDecryptData);
+        String receiveSign = CryptographyOperation.generateSign(secretConfig.getWFpriKey(), receiveEncryptData);
+        // 查询转发地址
+        ApiBaseInfo apiBaseInfo = apiBaseInfoBiz.selectByApiPubkey(apiID);
+        String url = apiBaseInfo.getBaseUrl() + apiBaseInfo.getPath();
+        // 封装数据
+        PlatformRequestPostEntity platformRequestPostEntity = new PlatformRequestPostEntity();
+        platformRequestPostEntity.setData(receiveEncryptData);
+        platformRequestPostEntity.setSign(receiveSign);
+        platformRequestPostEntity.setFiles(clientRequestPostEntity.getFiles());
+        // 存储发送的数据
+        String primaryKey = apiAccessRecordBiz.insertApiRecord(request, apiBaseInfo, JSONObject.toJSONString(platformRequestPostEntity));
+        // 发送并接收数据
+        String rspData = HttpOperation.sendJsonHttp(url, JSONObject.toJSONString(platformRequestPostEntity));
+        // 存储收到的数据
+        if (com.ztgeo.utils.StringUtils.isBlank(rspData)) {
+            throw new ZtgeoBizRuntimeException(CodeMsg.FAIL, "未接收到响应数据");
+        } else {
+            apiAccessRecordBiz.updateApiRecord(primaryKey, rspData);
+        }
+        // 转换为预定义响应实体类
+        CommonResponseEntity commonResponseEntity = JSONObject.parseObject(rspData, CommonResponseEntity.class);
+        String rspEncryptData = commonResponseEntity.getData();
+       if (commonResponseEntity.getCode()!=200)
+       {
+           apiAccessRecordBiz.updateApiRecordStatus(primaryKey);
+           if (com.ztgeo.utils.StringUtils.isBlank(rspEncryptData)){
+               commonResponseEntity.setCode(200);
+               commonResponseEntity.setMsg("接收成功");
+               commonResponseEntity.setData("");
+               commonResponseEntity.setSign("");
+               commonResponseEntity.setFiles("");
+           }
+       }
         return JSONObject.toJSONString(commonResponseEntity);
     }
 
@@ -171,7 +246,7 @@ public class RequestJsonProcessBiz {
             // 查询apiId的转发的目标url
             ApiBaseInfo apiBaseInfo = apiBaseInfoBiz.selectByApiPubkey(apiID);
             if (Objects.equals(null, apiBaseInfo)) {
-                return "";
+                return "获取转发信息失败";
             }
             // 获取发送url
             String url = apiBaseInfo.getBaseUrl() + apiBaseInfo.getPath();
@@ -231,7 +306,7 @@ public class RequestJsonProcessBiz {
             return rspJson.toJSONString();
         } catch (Exception e) {
             e.printStackTrace();
-            return "";
+            return "处理数据异常";
         }
     }
 

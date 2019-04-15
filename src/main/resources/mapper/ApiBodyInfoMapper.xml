@@ -16,7 +16,6 @@
         <result property="updUserId" column="upd_user_id"/>
         <result property="updTime" column="upd_time"/>
     </resultMap>
-
     <select id="getParamValidate" parameterType="String" resultMap="apiBodyInfoMap">
         select abii.param_name,abii.validate_reg
         from api_base_info abi
